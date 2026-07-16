@@ -1,113 +1,504 @@
-// URL der PokéAPI
+// Verbindung zur PokéAPI
+
 const apiUrl = "https://pokeapi.co/api/v2/pokemon/";
 
-// Pokémon suchen
-async function searchPokemon() {
 
-    // Eingabe lesen
-    const pokemonName = document
-        .getElementById("pokemonName")
-        .value
-        .trim()
-        .toLowerCase();
+// Hier werden alle Pokémon gespeichert
 
-    // Prüfen, ob etwas eingegeben wurde
-    if (pokemonName === "") {
+let allPokemon = [];
 
-        alert("Bitte gib einen Pokémon-Namen ein.");
 
-        return;
-    }
 
-    try {
 
-        // Daten laden
-        const response = await fetch(apiUrl + pokemonName);
+// ==================================
+// ALLE POKÉMON LADEN
+// ==================================
 
-        // Existiert das Pokémon?
-        if (!response.ok) {
+async function loadPokemon(){
 
-            throw new Error("Pokémon nicht gefunden");
 
-        }
+    allPokemon = [];
 
-        // JSON umwandeln
-        const data = await response.json();
 
-        // Typen sammeln
-        const typen = data.types
-            .map(type => type.type.name)
-            .join(", ");
+    for(let i = 1; i <= 100; i++){
 
-        // Fähigkeiten sammeln
-        const faehigkeiten = data.abilities
-            .map(ability => ability.ability.name)
-            .join(", ");
 
-        // Karte erstellen
-        document.getElementById("pokemonInfo").innerHTML = `
+        const response = await fetch(apiUrl + i);
 
-            <div class="card">
 
-                <img src="${data.sprites.other["official-artwork"].front_default}"
-                     alt="${data.name}">
+        const pokemon = await response.json();
 
-                <h2>${data.name.toUpperCase()}</h2>
 
-                <div class="info">
+        allPokemon.push(pokemon);
 
-                    <p><strong>Pokédex Nummer:</strong> ${data.id}</p>
-
-                    <p><strong>Größe:</strong> ${data.height}</p>
-
-                    <p><strong>Gewicht:</strong> ${data.weight}</p>
-
-                    <p><strong>Typ:</strong> ${typen}</p>
-
-                    <p><strong>Fähigkeiten:</strong> ${faehigkeiten}</p>
-
-                    <p><strong>Basis-Erfahrung:</strong> ${data.base_experience}</p>
-
-                </div>
-
-            </div>
-
-        `;
 
     }
 
-    catch (error) {
 
-        document.getElementById("pokemonInfo").innerHTML = `
 
-            <div class="card">
+    console.log("Pokémon geladen:", allPokemon.length);
 
-                <h2>❌ Pokémon nicht gefunden</h2>
 
-                <p>
 
-                    Bitte überprüfe die Schreibweise
-                    und versuche es erneut.
+    displayPokemon(allPokemon);
 
-                </p>
-
-            </div>
-
-        `;
-
-    }
 
 }
 
-// Enter-Taste unterstützt die Suche
+
+
+
+
+
+
+
+// ==================================
+// POKÉMON KARTEN ANZEIGEN
+// ==================================
+
+function displayPokemon(pokemonArray){
+
+
+
+    const container = document.getElementById("pokemonList");
+
+
+    container.innerHTML = "";
+
+
+
+    if(pokemonArray.length === 0){
+
+
+        container.innerHTML = 
+        "<h2>Keine Pokémon gefunden</h2>";
+
+
+        return;
+
+    }
+
+
+
+
+
+
+    pokemonArray.forEach(pokemon => {
+
+
+
+        let types = pokemon.types
+        .map(type => type.type.name)
+        .join(", ");
+
+
+
+
+
+        container.innerHTML += `
+
+
+
+        <div class="pokemon-card">
+
+
+            <img 
+            src="${pokemon.sprites.other["official-artwork"].front_default}"
+            >
+
+
+
+            <h2>
+            ${pokemon.name}
+            </h2>
+
+
+
+            <p>
+            Typ: ${types}
+            </p>
+
+
+
+
+
+            <button onclick="showEvolution('${pokemon.name}')">
+
+                🌱 Evolution anzeigen
+
+            </button>
+
+
+
+
+            <div 
+            class="evolution"
+            id="evo-${pokemon.name}">
+
+            </div>
+
+
+
+        </div>
+
+
+
+        `;
+
+
+
+    });
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// ==================================
+// TYP FILTER
+// ==================================
+
+
 document
+.getElementById("typeFilter")
+.addEventListener("change", function(){
+
+
+
+    let selectedType = this.value;
+
+
+
+    console.log("Filter:", selectedType);
+
+
+
+    if(selectedType === "all"){
+
+
+
+        displayPokemon(allPokemon);
+
+
+        return;
+
+    }
+
+
+
+
+
+    let filteredPokemon = allPokemon.filter(function(pokemon){
+
+
+
+        return pokemon.types.some(function(type){
+
+
+            return type.type.name === selectedType;
+
+
+        });
+
+
+
+    });
+
+
+
+
+
+    console.log("Gefiltert:", filteredPokemon);
+
+
+
+    displayPokemon(filteredPokemon);
+
+
+
+});
+
+
+
+
+
+
+
+
+
+// ==================================
+// FILTER RESET
+// ==================================
+
+
+function resetFilter(){
+
+
+    document
+    .getElementById("typeFilter")
+    .value = "all";
+
+
+
+    displayPokemon(allPokemon);
+
+
+}
+
+
+
+
+
+
+
+
+
+// ==================================
+// EVOLUTION BUTTON
+// ==================================
+
+
+async function showEvolution(name){
+
+
+
+    const speciesResponse = await fetch(
+
+        `https://pokeapi.co/api/v2/pokemon-species/${name}`
+
+    );
+
+
+
+    const speciesData = await speciesResponse.json();
+
+
+
+
+
+    const evolutionResponse = await fetch(
+
+        speciesData.evolution_chain.url
+
+    );
+
+
+
+    const evolutionData = await evolutionResponse.json();
+
+
+
+
+
+    let chain = evolutionData.chain;
+
+
+
+    let evolutionText = chain.species.name;
+
+
+
+
+
+    if(chain.evolves_to.length > 0){
+
+
+        evolutionText += 
+        " → " +
+        chain.evolves_to[0].species.name;
+
+
+    }
+
+
+
+
+
+
+    if(
+        chain.evolves_to.length > 0 &&
+        chain.evolves_to[0].evolves_to.length > 0
+    ){
+
+
+        evolutionText +=
+        " → " +
+        chain.evolves_to[0]
+        .evolves_to[0]
+        .species.name;
+
+
+    }
+
+
+
+
+
+
+    document
+    .getElementById("evo-" + name)
+    .innerHTML = 
+    "Evolution: " + evolutionText;
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// ==================================
+// POKÉMON SUCHEN
+// ==================================
+
+
+async function searchPokemon(){
+
+
+
+    let name = document
     .getElementById("pokemonName")
-    .addEventListener("keypress", function(event){
+    .value
+    .toLowerCase()
+    .trim();
 
-        if(event.key === "Enter"){
 
-            searchPokemon();
+
+
+
+    if(name === ""){
+
+
+        alert("Bitte Pokémon Namen eingeben");
+
+
+        return;
+
+    }
+
+
+
+
+
+
+    try{
+
+
+        const response = await fetch(
+            apiUrl + name
+        );
+
+
+
+        if(!response.ok){
+
+
+            throw new Error();
+
 
         }
 
-    });
+
+
+
+
+        const pokemon = await response.json();
+
+
+
+
+
+        let types = pokemon.types
+        .map(type => type.type.name)
+        .join(", ");
+
+
+
+
+
+
+
+        document
+        .getElementById("pokemonInfo")
+        .innerHTML = `
+
+
+
+        <div class="card">
+
+
+        <img 
+        src="${pokemon.sprites.other["official-artwork"].front_default}"
+        >
+
+
+
+        <h2>
+        ${pokemon.name}
+        </h2>
+
+
+
+        <p>
+        Typ: ${types}
+        </p>
+
+
+
+        </div>
+
+
+
+        `;
+
+
+
+    }
+
+
+    catch{
+
+
+        document
+        .getElementById("pokemonInfo")
+        .innerHTML = 
+        "<h2>Pokémon nicht gefunden</h2>";
+
+    }
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// ==================================
+// START
+// ==================================
+
+
+window.onload = function(){
+
+
+    loadPokemon();
+
+
+};
