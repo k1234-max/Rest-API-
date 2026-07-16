@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pokémon Projekt</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      color: #222222;
+    }
+
+    header {
+      background-color: #e53935;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+
+    nav {
+      background-color: #222222;
+      text-align: center;
+      padding: 12px;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 12px;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 20px;
+    }
+
+    .welcome-box {
+      background-color: white;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+    }
+
+    .welcome-box h2 {
+      color: #e53935;
+    }
+
+    .start-button {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 12px 20px;
+      background-color: #ffcb05;
+      color: #222222;
+      text-decoration: none;
+      font-weight: bold;
+      border-radius: 8px;
+    }
+
+    .start-button:hover {
+      background-color: #e6b800;
+    }
+
+    .info-section {
+      margin-top: 25px;
+      background-color: white;
+      padding: 25px;
+      border-radius: 12px;
+    }
+
+    footer {
+      margin-top: 40px;
+      background-color: #222222;
+      color: white;
+      text-align: center;
+      padding: 15px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>Pokémon Finder</h1>
+    <p>Willkommen bei unserem Pokémon-Projekt</p>
+  </header>
+
+  <nav>
+    <a href="index.html">Startseite</a>
+    <a href="pokemon.html">Pokémon suchen</a>
+    <a href="#about">Über das Projekt</a>
+  </nav>
+
+  <main>
+    <section class="welcome-box">
+      <h2>Willkommen!</h2>
+
+      <p>
+        Auf dieser Webseite kannst du verschiedene Pokémon suchen
+        und Informationen über sie anzeigen lassen.
+      </p>
+
+      <p>
+        Du kannst zum Beispiel den Namen, die Pokédex-Nummer,
+        die Größe, das Gewicht und die Fähigkeiten eines Pokémon sehen.
+      </p>
+
+      <a class="start-button" href="pokemon.html">
+        Pokémon entdecken
+      </a>
+    </section>
+
+    <section id="about" class="info-section">
+      <h2>Über unser Projekt</h2>
+
+      <p>
+        Diese Webseite wurde mit HTML, CSS und JavaScript erstellt.
+        Die Pokémon-Daten werden später mit der PokéAPI geladen.
+      </p>
+
+      <p>
+        Unser Ziel ist es, eine einfache und verständliche
+        Pokémon-Webseite zu programmieren.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <p>Schülerpraktikum – Pokémon Projekt</p>
+  </footer>
+
+</body>
+</html>
