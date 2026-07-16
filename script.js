@@ -1,79 +1,113 @@
 // URL der PokéAPI
 const apiUrl = "https://pokeapi.co/api/v2/pokemon/";
 
-// Funktion zum Suchen eines Pokémon
+// Pokémon suchen
 async function searchPokemon() {
 
-    // Eingabe aus dem Suchfeld lesen
-    const pokemonName = document.getElementById("pokemonName").value.toLowerCase();
+    // Eingabe lesen
+    const pokemonName = document
+        .getElementById("pokemonName")
+        .value
+        .trim()
+        .toLowerCase();
 
     // Prüfen, ob etwas eingegeben wurde
     if (pokemonName === "") {
+
         alert("Bitte gib einen Pokémon-Namen ein.");
+
         return;
     }
 
     try {
 
-        // Daten von der API holen
+        // Daten laden
         const response = await fetch(apiUrl + pokemonName);
 
-        // Prüfen, ob das Pokémon existiert
+        // Existiert das Pokémon?
         if (!response.ok) {
+
             throw new Error("Pokémon nicht gefunden");
+
         }
 
-        // JSON-Daten umwandeln
+        // JSON umwandeln
         const data = await response.json();
 
-        // Name
-        const name = data.name;
-
-        // Pokédex-Nummer
-        const id = data.id;
-
-        // Größe
-        const height = data.height;
-
-        // Gewicht
-        const weight = data.weight;
-
-        // Bild
-        const image = data.sprites.front_default;
-
-        // Typen
-        const types = data.types
+        // Typen sammeln
+        const typen = data.types
             .map(type => type.type.name)
             .join(", ");
 
-        // Fähigkeiten
-        const abilities = data.abilities
+        // Fähigkeiten sammeln
+        const faehigkeiten = data.abilities
             .map(ability => ability.ability.name)
             .join(", ");
 
-        // Ausgabe auf der Webseite
+        // Karte erstellen
         document.getElementById("pokemonInfo").innerHTML = `
-            <h2>${name.toUpperCase()}</h2>
 
-            <img src="${image}" alt="${name}">
+            <div class="card">
 
-            <p><strong>Pokédex Nummer:</strong> ${id}</p>
+                <img src="${data.sprites.other["official-artwork"].front_default}"
+                     alt="${data.name}">
 
-            <p><strong>Größe:</strong> ${height}</p>
+                <h2>${data.name.toUpperCase()}</h2>
 
-            <p><strong>Gewicht:</strong> ${weight}</p>
+                <div class="info">
 
-            <p><strong>Typ:</strong> ${types}</p>
+                    <p><strong>Pokédex Nummer:</strong> ${data.id}</p>
 
-            <p><strong>Fähigkeiten:</strong> ${abilities}</p>
+                    <p><strong>Größe:</strong> ${data.height}</p>
+
+                    <p><strong>Gewicht:</strong> ${data.weight}</p>
+
+                    <p><strong>Typ:</strong> ${typen}</p>
+
+                    <p><strong>Fähigkeiten:</strong> ${faehigkeiten}</p>
+
+                    <p><strong>Basis-Erfahrung:</strong> ${data.base_experience}</p>
+
+                </div>
+
+            </div>
+
         `;
 
-    } catch (error) {
-
-        // Fehlermeldung
-        document.getElementById("pokemonInfo").innerHTML = `
-            <h2>❌ Pokémon wurde nicht gefunden.</h2>
-        `;
     }
+
+    catch (error) {
+
+        document.getElementById("pokemonInfo").innerHTML = `
+
+            <div class="card">
+
+                <h2>❌ Pokémon nicht gefunden</h2>
+
+                <p>
+
+                    Bitte überprüfe die Schreibweise
+                    und versuche es erneut.
+
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
 }
 
+// Enter-Taste unterstützt die Suche
+document
+    .getElementById("pokemonName")
+    .addEventListener("keypress", function(event){
+
+        if(event.key === "Enter"){
+
+            searchPokemon();
+
+        }
+
+    });
